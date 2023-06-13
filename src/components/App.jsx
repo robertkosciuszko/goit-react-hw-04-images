@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { fetchImages } from './api/fetchImages';
@@ -20,7 +19,7 @@ export const App = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setIsLoading({ isLoading: true });
+    setIsLoading(true);
     const inputForSearch = e.target.elements.inputForSearch;
     if (inputForSearch.value.trim() === '') {
       return;
@@ -33,7 +32,7 @@ export const App = () => {
   };
 
   const handleClickMore = async () => {
-    setIsLoading({ isLoading: true });
+    setIsLoading(true);
     const response = await fetchImages(currentSearch, pageNr);
     setImages([...images, ...response]);
     setIsLoading(false);
@@ -59,22 +58,24 @@ export const App = () => {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   return (
-    <div
-      className={styles.Loader}
-    >
-      {isLoading && (pageNr === 1) ? (
+    <div className={styles.Loader}>
+      {isLoading && pageNr === 1 ? (
         <Loader />
       ) : (
-        <React.Fragment>
+        <>
           <Searchbar onSubmit={handleSubmit} />
           <ImageGallery onImageClick={handleImageClick} images={images} />
-      
-          {isLoading && (pageNr >= 2) ? <Loader /> : null}
+
+          {isLoading && pageNr >= 2 ? <Loader /> : null}
           {images.length > 0 ? <Button onClick={handleClickMore} /> : null}
-        </React.Fragment>
+        </>
       )}
       {modalOpen ? (
         <Modal src={modalImg} alt={modalAlt} handleClose={handleModalClose} />
